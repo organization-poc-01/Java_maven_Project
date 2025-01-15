@@ -14,7 +14,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     environment:
       name: build
 
@@ -30,7 +30,7 @@ jobs:
 
 
   deploy_to_dev:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     environment:
       name: dev
     needs: build
@@ -46,7 +46,7 @@ jobs:
 
 
   deploy_to_uat:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     environment:
       name: uat
     needs: build
@@ -74,7 +74,7 @@ jobs:
 
 
   deploy_to_production:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     environment:
       name: production
     needs: build #production_approval
