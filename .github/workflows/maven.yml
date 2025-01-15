@@ -1,17 +1,89 @@
-name: Self-Hosted Runner Example
+name: Simple Java CI with Manual Approval
 
 on:
   push:
     branches:
       - main
+      - uat
+      - dev
+  pull_request:
+    branches:
+      - main
+      - uat
+      - dev
 
 jobs:
   build:
-    runs-on: self-hosted  # Use the self-hosted runner
+    runs-on: ubuntu-latest
+    environment:
+      name: build
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v2
-
-      - name: Run build
+      - name: Compile and test the project
         run: mvn clean install
+      - name: Package the project
+        run: mvn package
+      - name: Notify build success
+        run: echo "Build and package completed!"
+
+
+  deploy_to_dev:
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+    needs: build
+    if: github.ref == 'refs/heads/dev' 
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Deploy to development
+        run: echo "Deploying to development environment"
+      - name: Notify deployment success
+        run: echo "Deployment to development was successful!"
+
+
+  deploy_to_uat:
+    runs-on: ubuntu-latest
+    environment:
+      name: uat
+    needs: build
+    if: github.ref == 'refs/heads/uat' 
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Deploy to UAT
+        run: echo "Deploying to UAT environment"
+      - name: Notify deployment success
+        run: echo "Deployment to UAT was successful!"
+
+  # production_approval:
+  #   runs-on: ubuntu-latest
+  #   environment:
+  #     name: production
+  #   needs: deploy_to_uat
+  #   if: github.ref == 'refs/heads/main' 
+  #   steps:
+  #     - name: Wait for manual approval
+  #       uses: peter-evans/manual-approval-action@v2
+  #       with:
+  #         approval_required: true  
+
+
+  deploy_to_production:
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+    needs: build #production_approval
+    if: github.ref == 'refs/heads/main' 
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Deploy to production
+        run: echo "Deploying to production environment"
+      - name: Notify deployment success
+        run: echo "Deployment to production was successful!"
