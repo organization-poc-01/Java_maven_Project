@@ -60,24 +60,12 @@ jobs:
       - name: Notify deployment success
         run: echo "Deployment to UAT was successful!"
 
-  # production_approval:
-  #   runs-on: ubuntu-latest
-  #   environment:
-  #     name: production
-  #   needs: deploy_to_uat
-  #   if: github.ref == 'refs/heads/main' 
-  #   steps:
-  #     - name: Wait for manual approval
-  #       uses: peter-evans/manual-approval-action@v2
-  #       with:
-  #         approval_required: true  
-
 
   deploy_to_production:
     runs-on: self-hosted
     environment:
       name: production
-    needs: build #production_approval
+    needs: build
     if: github.ref == 'refs/heads/main' 
 
     steps:
