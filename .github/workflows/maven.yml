@@ -62,6 +62,8 @@ jobs:
             --image ${{ env.REGISTRY_URL }}/${{ env.PROJECT_NAME }}:${{ github.sha }} \
             --registry ${{ env.AZURE_CONTAINER_REGISTRY }} \
             .
+        env:
+          DOCKER_HOST: unix:///var/run/docker.sock
 
       - name: Gets K8s context
         uses: azure/aks-set-context@94ccc775c1997a3fcfbfbce3c459fec87e0ab188
