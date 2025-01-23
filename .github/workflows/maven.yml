@@ -12,14 +12,18 @@ on:
       - uat
       - dev
 env:
-  AZURE_CONTAINER_REGISTRY: ${{ secrets.AZURE_CONTAINER_REGISTRY }}
-  PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
-  RESOURCE_GROUP: ${{ secrets.RESOURCE_GROUP }}
-  CLUSTER_NAME: ${{ secrets.CLUSTER_NAME }}
-  REGISTRY_URL: ${{ secrets.REGISTRY_URL }}
+  AZURE_CONTAINER_REGISTRY: acrgagan01
+  PROJECT_NAME: mavenproject
+  RESOURCE_GROUP: gagan-rg
+  CLUSTER_NAME: aks-gagan-learning-001
+  REGISTRY_URL: acrgagan01.azurecr.io
 jobs:
   build:
-    runs-on: self-hosted
+    runs-on:
+    - self-hosted
+    - Linux
+    - X64
+    - my-machine
     environment:
       name: build
 
@@ -52,10 +56,15 @@ jobs:
       - name: Build image on ACR
         uses: Azure/cli@v2.1.0
         with:
-          azcliversion: 2.29.1
           inlineScript: |
             az configure --defaults acr=${{ env.AZURE_CONTAINER_REGISTRY }}
-            az acr build -t -t ${{ env.REGISTRY_URL }}/${{ env.PROJECT_NAME }}:${{ github.sha }}
+            az acr build \
+            --image ${{ env.REGISTRY_URL }}/${{ env.PROJECT_NAME }}:${{ github.sha }} \
+            --registry ${{ env.AZURE_CONTAINER_REGISTRY }} \
+            .
+        env:
+          DOCKER_HOST: unix:///var/run/docker.sock
+
       - name: Gets K8s context
         uses: azure/aks-set-context@94ccc775c1997a3fcfbfbce3c459fec87e0ab188
         with:
@@ -91,10 +100,14 @@ jobs:
       - name: Build image on ACR
         uses: Azure/cli@v2.1.0
         with:
-          azcliversion: 2.29.1
           inlineScript: |
             az configure --defaults acr=${{ env.AZURE_CONTAINER_REGISTRY }}
-            az acr build -t -t ${{ env.REGISTRY_URL }}/${{ env.PROJECT_NAME }}:${{ github.sha }}
+            az acr build \
+            --image ${{ env.REGISTRY_URL }}/${{ env.PROJECT_NAME }}:${{ github.sha }} \
+            --registry ${{ env.AZURE_CONTAINER_REGISTRY }} \
+            .
+        env:
+          DOCKER_HOST: unix:///var/run/docker.sock
       - name: Gets K8s context
         uses: azure/aks-set-context@94ccc775c1997a3fcfbfbce3c459fec87e0ab188
         with:
@@ -127,26 +140,29 @@ jobs:
         uses: Azure/login@v2.2.0
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Build image on ACR
-        uses: Azure/cli@v2.1.0
+      - name: Docker Login
+        uses: docker/login-action@v3.3.0
         with:
-          azcliversion: 2.29.1
-          inlineScript: |
-            az configure --defaults acr=${{ env.AZURE_CONTAINER_REGISTRY }}
-            az acr build -t -t ${{ env.REGISTRY_URL }}/${{ env.PROJECT_NAME }}:${{ github.sha }}
-      - name: Gets K8s context
-        uses: azure/aks-set-context@94ccc775c1997a3fcfbfbce3c459fec87e0ab188
+          registry: ${{ env.REGISTRY_URL }}
+          username: acrgagan01
+          password: 8PM2wk5AwAGX1+Do0UxImZoJhbOAikg/Glt4B2BOrY+ACRB+x8CT
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ env.REGISTRY_URL }}/${{ env.PROJECT_NAME }}:${{ github.sha }} .
+          docker push ${{ env.REGISTRY_URL }}/${{ env.PROJECT_NAME }}:${{ github.sha }}
+        env:
+          DOCKER_HOST: unix:///var/run/docker.sock
+      - name: Set AKS Context
+        uses: azure/aks-set-context@v4
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
           resource-group: ${{ env.RESOURCE_GROUP }}
-          cluster-name: ${{ env.CLUSTER_NAME }}
-        id: login
-      - name: Deploy to Kubernetes cluster
-        uses: Azure/k8s-deploy@v5.0.1
-        with:
-          manifests: ${{ steps.bake.outputs.manifestsBundle }}
-          images: |
-            ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.PROJECT_NAME }}:${{ github.sha }}
-          imagepullsecrets: |
-            ${{ env.PROJECT_NAME }}
+          cluster-name: aks-gagan-learning-001
+      # - name: Deploy to Kubernetes cluster
+      #   uses: Azure/k8s-deploy@v5.0.1
+      #   with:
+      #     manifests: 
+      #     images: |
+      #       ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.PROJECT_NAME }}:${{ github.sha }}
+      #     imagepullsecrets: |
+      #       ${{ env.PROJECT_NAME }}
 
