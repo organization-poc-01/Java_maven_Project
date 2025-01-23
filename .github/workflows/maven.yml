@@ -19,9 +19,11 @@ env:
   REGISTRY_URL: ${{ secrets.REGISTRY_URL }}
 jobs:
   build:
-    runs-on: 
-      - group:Default
-      - self-hosted     
+    runs-on:
+    - self-hosted
+    - Linux
+    - X64
+    - my-machine
     environment:
       name: build
 
