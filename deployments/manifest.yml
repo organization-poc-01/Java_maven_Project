@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: my-java-webapp
+  namespace: mavenproject
 spec:
   replicas: 3
   selector:
@@ -13,8 +14,8 @@ spec:
         app: my-java-webapp
     spec:
       containers:
-      - name: my-java-webapp
-        image: myregistry.azurecr.io/my-java-webapp:latest
+      - name: ${{ env.PROJECT_NAME }}
+        image: acrgagan01.azurecr.io/${{ env.PROJECT_NAME }}:${{ github.sha }}
         ports:
         - containerPort: 8080
         resources:
