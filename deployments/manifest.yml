@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-java-webapp
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: my-java-webapp
+  template:
+    metadata:
+      labels:
+        app: my-java-webapp
+    spec:
+      containers:
+      - name: my-java-webapp
+        image: myregistry.azurecr.io/my-java-webapp:latest
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-java-webapp
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    app: my-java-webapp
