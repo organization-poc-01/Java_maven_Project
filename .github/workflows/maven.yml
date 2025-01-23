@@ -140,17 +140,10 @@ jobs:
         uses: Azure/login@v2.2.0
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Build image on ACR
-        uses: Azure/cli@v2.1.0
-        with:
-          inlineScript: |
-            az configure --defaults acr=${{ env.AZURE_CONTAINER_REGISTRY }}
-            az acr build \
-            --image ${{ env.REGISTRY_URL }}/${{ env.PROJECT_NAME }}:${{ github.sha }} \
-            --registry ${{ env.AZURE_CONTAINER_REGISTRY }} \
-            .
-        env:
-          DOCKER_HOST: unix:///var/run/docker.sock
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ env.REGISTRY_URL }}/${{ env.PROJECT_NAME }}:${{ github.sha }} .
+          docker push ${{ env.REGISTRY_URL }}/${{ env.PROJECT_NAME }}:${{ github.sha }}
       - name: Gets K8s context
         uses: azure/aks-set-context@94ccc775c1997a3fcfbfbce3c459fec87e0ab188
         with:
