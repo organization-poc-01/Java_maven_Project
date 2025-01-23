@@ -152,13 +152,12 @@ jobs:
           docker push ${{ env.REGISTRY_URL }}/${{ env.PROJECT_NAME }}:${{ github.sha }}
         env:
           DOCKER_HOST: unix:///var/run/docker.sock
-      - name: Gets K8s context
-        uses: azure/aks-set-context@94ccc775c1997a3fcfbfbce3c459fec87e0ab188
+      - name: Set AKS Context
+        uses: azure/aks-set-context@v2
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
           resource-group: ${{ env.RESOURCE_GROUP }}
           cluster-name: ${{ env.CLUSTER_NAME }}
-        id: login
+          admin: false
       - name: Deploy to Kubernetes cluster
         uses: Azure/k8s-deploy@v5.0.1
         with:
