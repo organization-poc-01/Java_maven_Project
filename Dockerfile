@@ -6,7 +6,7 @@ COPY pom.xml .
 
 COPY src ./src/
 
-RUN mvn clean package -o -DskipTests
+RUN mvn clean install package
 
 FROM tomcat:9.0-jdk11
 
