@@ -153,17 +153,16 @@ jobs:
         env:
           DOCKER_HOST: unix:///var/run/docker.sock
       - name: Set AKS Context
-        uses: azure/aks-set-context@v2
+        uses: azure/aks-set-context@v4
         with:
           resource-group: ${{ env.RESOURCE_GROUP }}
-          cluster-name: ${{ env.CLUSTER_NAME }}
-          admin: false
-      - name: Deploy to Kubernetes cluster
-        uses: Azure/k8s-deploy@v5.0.1
-        with:
-          manifests: ${{ steps.bake.outputs.manifestsBundle }}
-          images: |
-            ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.PROJECT_NAME }}:${{ github.sha }}
-          imagepullsecrets: |
-            ${{ env.PROJECT_NAME }}
+          cluster-name: aks-gagan-learning-001
+      # - name: Deploy to Kubernetes cluster
+      #   uses: Azure/k8s-deploy@v5.0.1
+      #   with:
+      #     manifests: 
+      #     images: |
+      #       ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.PROJECT_NAME }}:${{ github.sha }}
+      #     imagepullsecrets: |
+      #       ${{ env.PROJECT_NAME }}
 
