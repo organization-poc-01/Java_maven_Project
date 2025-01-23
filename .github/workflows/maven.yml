@@ -12,11 +12,11 @@ on:
       - uat
       - dev
 env:
-  AZURE_CONTAINER_REGISTRY: ${{ secrets.AZURE_CONTAINER_REGISTRY }}
+  AZURE_CONTAINER_REGISTRY: acrgagan01
   PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
-  RESOURCE_GROUP: ${{ secrets.RESOURCE_GROUP }}
-  CLUSTER_NAME: ${{ secrets.CLUSTER_NAME }}
-  REGISTRY_URL: ${{ secrets.REGISTRY_URL }}
+  RESOURCE_GROUP: gagan-rg
+  CLUSTER_NAME: aks-gagan-learning-001
+  REGISTRY_URL: acrgagan01.azurecr.io
 jobs:
   build:
     runs-on:
@@ -140,6 +140,12 @@ jobs:
         uses: Azure/login@v2.2.0
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Docker Login
+        uses: docker/login-action@v3.3.0
+        with:
+          registry: ${{ env.REGISTRY_URL }}
+          username: acrgagan01
+          password: 8PM2wk5AwAGX1+Do0UxImZoJhbOAikg/Glt4B2BOrY+ACRB+x8CT
       - name: Build Docker image
         run: |
           docker build -t ${{ env.REGISTRY_URL }}/${{ env.PROJECT_NAME }}:${{ github.sha }} .
