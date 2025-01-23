@@ -14,8 +14,8 @@ spec:
         app: my-java-webapp
     spec:
       containers:
-      - name: ${{ env.PROJECT_NAME }}
-        image: acrgagan01.azurecr.io/${{ env.PROJECT_NAME }}:${{ github.sha }}
+      - name: mavenproject
+        image: acrgagan01.azurecr.io/mavenproject:${{ github.sha }}
         ports:
         - containerPort: 8080
         resources:
