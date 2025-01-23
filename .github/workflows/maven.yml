@@ -1,16 +1,16 @@
 name: Simple Java CI with Manual Approval
 
-on:
-  push:
-    branches:
-      - main
-      - uat
-      - dev
-  pull_request:
-    branches:
-      - main
-      - uat
-      - dev
+# on:
+#   push:
+#     branches:
+#       - main
+#       - uat
+#       - dev
+#   pull_request:
+#     branches:
+#       - main
+#       - uat
+#       - dev
 env:
   AZURE_CONTAINER_REGISTRY: acrgagan01
   PROJECT_NAME: mavenproject
@@ -157,12 +157,14 @@ jobs:
         with:
           resource-group: ${{ env.RESOURCE_GROUP }}
           cluster-name: aks-gagan-learning-001
-      # - name: Deploy to Kubernetes cluster
-      #   uses: Azure/k8s-deploy@v5.0.1
-      #   with:
-      #     manifests: 
-      #     images: |
-      #       ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.PROJECT_NAME }}:${{ github.sha }}
-      #     imagepullsecrets: |
-      #       ${{ env.PROJECT_NAME }}
+      - name: Deploy to AKS
+        uses: Azure/k8s-deploy@v5.0.1
+        with:
+          manifests: |
+            deployments/manifest.yml
+            deployments/ingress.yml
+          images: |
+            ${{ env.REGISTRY_URL }}/${{ env.PROJECT_NAME }}:${{ github.sha }}
+          imagepullsecrets: |
+            ${{ env.PROJECT_NAME }}
 
