@@ -43,7 +43,7 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Docker Login
         run: |
-          az acr login --name $(( env.AZURE_CONTAINER_REGISTRY ))
+          az acr login --name ${{ env.AZURE_CONTAINER_REGISTRY }}
       - name: Build Docker image
         run: |
           docker build -t ${{ env.REGISTRY_URL }}/${{ env.PROJECT_NAME }}:${{ github.sha }} .
