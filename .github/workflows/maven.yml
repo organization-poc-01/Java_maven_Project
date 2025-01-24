@@ -37,106 +37,6 @@ jobs:
         run: mvn package
       - name: Notify build success
         run: echo "Build and package completed!"
-
-
-
-  deploy_to_dev:
-    runs-on: self-hosted
-    environment:
-      name: dev
-    needs: build
-    if: github.ref == 'refs/heads/dev' 
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Azure Login
-        uses: Azure/login@v2.2.0
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Build image on ACR
-        uses: Azure/cli@v2.1.0
-        with:
-          inlineScript: |
-            az configure --defaults acr=${{ env.AZURE_CONTAINER_REGISTRY }}
-            az acr build \
-            --image ${{ env.REGISTRY_URL }}/${{ env.PROJECT_NAME }}:${{ github.sha }} \
-            --registry ${{ env.AZURE_CONTAINER_REGISTRY }} \
-            .
-        env:
-          DOCKER_HOST: unix:///var/run/docker.sock
-
-      - name: Gets K8s context
-        uses: azure/aks-set-context@94ccc775c1997a3fcfbfbce3c459fec87e0ab188
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-          resource-group: ${{ env.RESOURCE_GROUP }}
-          cluster-name: ${{ env.CLUSTER_NAME }}
-        id: login
-      - name: Deploy to Kubernetes cluster
-        uses: Azure/k8s-deploy@v5.0.1
-        with:
-          manifests: ${{ steps.bake.outputs.manifestsBundle }}
-          images: |
-            ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.PROJECT_NAME }}:${{ github.sha }}
-          imagepullsecrets: |
-            ${{ env.PROJECT_NAME }}
-
-
-
-  deploy_to_uat:
-    runs-on: self-hosted
-    environment:
-      name: uat
-    needs: build
-    if: github.ref == 'refs/heads/uat' 
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Azure Login
-        uses: Azure/login@v2.2.0
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Build image on ACR
-        uses: Azure/cli@v2.1.0
-        with:
-          inlineScript: |
-            az configure --defaults acr=${{ env.AZURE_CONTAINER_REGISTRY }}
-            az acr build \
-            --image ${{ env.REGISTRY_URL }}/${{ env.PROJECT_NAME }}:${{ github.sha }} \
-            --registry ${{ env.AZURE_CONTAINER_REGISTRY }} \
-            .
-        env:
-          DOCKER_HOST: unix:///var/run/docker.sock
-      - name: Gets K8s context
-        uses: azure/aks-set-context@94ccc775c1997a3fcfbfbce3c459fec87e0ab188
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-          resource-group: ${{ env.RESOURCE_GROUP }}
-          cluster-name: ${{ env.CLUSTER_NAME }}
-        id: login
-      - name: Deploy to Kubernetes cluster
-        uses: Azure/k8s-deploy@v5.0.1
-        with:
-          manifests: ${{ steps.bake.outputs.manifestsBundle }}
-          images: |
-            ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.PROJECT_NAME }}:${{ github.sha }}
-          imagepullsecrets: |
-            ${{ env.PROJECT_NAME }}
-
-
-
-  deploy_to_production:
-    runs-on: self-hosted
-    environment:
-      name: production
-    needs: build
-    if: github.ref == 'refs/heads/main' 
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
       - name: Azure Login
         uses: Azure/login@v2.2.0
         with:
@@ -153,6 +53,76 @@ jobs:
           docker push ${{ env.REGISTRY_URL }}/${{ env.PROJECT_NAME }}:${{ github.sha }}
         env:
           DOCKER_HOST: unix:///var/run/docker.sock
+
+
+
+  deploy_to_dev:
+    runs-on: self-hosted
+    environment:
+      name: dev
+    needs: build
+    if: github.ref == 'refs/heads/dev' 
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set AKS Context
+        uses: azure/aks-set-context@v4
+        with:
+          resource-group: ${{ env.RESOURCE_GROUP }}
+          cluster-name: aks-gagan-learning-001
+      - name: Deploy to AKS
+        uses: Azure/k8s-deploy@v5.0.1
+        with:
+          namespace: mavenproject
+          manifests: |
+            deployments/manifest.yml
+            deployments/ingress.yml
+          images: |
+            ${{ env.REGISTRY_URL }}/${{ env.PROJECT_NAME }}:${{ github.sha }}
+          imagepullsecrets: |
+            ${{ env.PROJECT_NAME }}
+
+
+  deploy_to_uat:
+    runs-on: self-hosted
+    environment:
+      name: uat
+    needs: build
+    if: github.ref == 'refs/heads/uat' 
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set AKS Context
+        uses: azure/aks-set-context@v4
+        with:
+          resource-group: ${{ env.RESOURCE_GROUP }}
+          cluster-name: aks-gagan-learning-001
+      - name: Deploy to AKS
+        uses: Azure/k8s-deploy@v5.0.1
+        with:
+          namespace: mavenproject
+          manifests: |
+            deployments/manifest.yml
+            deployments/ingress.yml
+          images: |
+            ${{ env.REGISTRY_URL }}/${{ env.PROJECT_NAME }}:${{ github.sha }}
+          imagepullsecrets: |
+            ${{ env.PROJECT_NAME }}
+
+
+
+  deploy_to_production:
+    runs-on: self-hosted
+    environment:
+      name: production
+    needs: build
+    if: github.ref == 'refs/heads/main' 
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
       - name: Set AKS Context
         uses: azure/aks-set-context@v4
         with:
