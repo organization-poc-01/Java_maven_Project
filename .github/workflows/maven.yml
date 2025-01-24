@@ -63,6 +63,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      - name: Azure Login
+        uses: Azure/login@v2.2.0
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Set AKS Context
         uses: azure/aks-set-context@v4
         with:
@@ -91,6 +95,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      - name: Azure Login
+        uses: Azure/login@v2.2.0
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Set AKS Context
         uses: azure/aks-set-context@v4
         with:
@@ -108,8 +116,6 @@ jobs:
           imagepullsecrets: |
             ${{ env.PROJECT_NAME }}
 
-
-
   deploy_to_production:
     runs-on: self-hosted
     environment:
@@ -120,6 +126,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      - name: Azure Login
+        uses: Azure/login@v2.2.0
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Set AKS Context
         uses: azure/aks-set-context@v4
         with:
