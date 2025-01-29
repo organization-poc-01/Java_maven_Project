@@ -47,6 +47,7 @@ jobs:
         run: |
           docker build -t ${{ env.REGISTRY_URL }}/${{ env.PROJECT_NAME }}:${{ github.sha }} .
           docker push ${{ env.REGISTRY_URL }}/${{ env.PROJECT_NAME }}:${{ github.sha }}
+          docker pull ${{ env.REGISTRY_URL }}/${{ env.PROJECT_NAME }}:${{ github.sha }}
         env:
           DOCKER_HOST: unix:///var/run/docker.sock
 
