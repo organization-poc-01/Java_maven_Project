@@ -16,7 +16,7 @@ env:
   AZURE_CONTAINER_REGISTRY: acrgagan01
   PROJECT_NAME: mavenproject
   RESOURCE_GROUP: gagan-rg
-  CLUSTER_NAME: aks-gagan-learning-001
+  CLUSTER_NAME: aks-agic-eus-01
   REGISTRY_URL: acrgagan01.azurecr.io
 jobs:
   build:
