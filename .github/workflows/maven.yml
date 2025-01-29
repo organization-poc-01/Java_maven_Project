@@ -70,7 +70,7 @@ jobs:
         uses: azure/aks-set-context@v4
         with:
           resource-group: ${{ env.RESOURCE_GROUP }}
-          cluster-name: aks-gagan-learning-001
+          cluster-name: aks-agic-eus-01
       - name: Deploy to AKS
         uses: Azure/k8s-deploy@v5.0.1
         with:
@@ -102,7 +102,7 @@ jobs:
         uses: azure/aks-set-context@v4
         with:
           resource-group: ${{ env.RESOURCE_GROUP }}
-          cluster-name: aks-gagan-learning-001
+          cluster-name: aks-agic-eus-01
       - name: Deploy to AKS
         uses: Azure/k8s-deploy@v5.0.1
         with:
@@ -133,7 +133,7 @@ jobs:
         uses: azure/aks-set-context@v4
         with:
           resource-group: ${{ env.RESOURCE_GROUP }}
-          cluster-name: aks-gagan-learning-001
+          cluster-name: aks-agic-eus-01
       - name: Deploy to AKS
         uses: Azure/k8s-deploy@v5.0.1
         with:
