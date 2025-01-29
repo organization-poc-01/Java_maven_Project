@@ -24,7 +24,6 @@ jobs:
     - self-hosted
     - Linux
     - X64
-    - my-machine
     environment:
       name: build
 
