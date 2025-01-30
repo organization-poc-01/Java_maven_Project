@@ -1,22 +1,22 @@
 name: Simple Java CI with Manual Approval
 
-on:
-  push:
-    branches:
-      - main
-      - uat
-      - dev
-  pull_request:
-    branches:
-      - main
-      - uat
-      - dev
+# on:
+#   push:
+#     branches:
+#       - main
+#       - uat
+#       - dev
+#   pull_request:
+#     branches:
+#       - main
+#       - uat
+#       - dev
       
 env:
   AZURE_CONTAINER_REGISTRY: acrgagan01
   PROJECT_NAME: mavenproject
   RESOURCE_GROUP: gagan-rg
-  CLUSTER_NAME: aks-agic-eus-01
+  CLUSTER_NAME: aks-poc-centralindia-01
   REGISTRY_URL: acrgagan01.azurecr.io
 jobs:
   build:
