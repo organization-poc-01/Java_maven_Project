@@ -13,11 +13,11 @@ on:
       - dev
       
 env:
-  AZURE_CONTAINER_REGISTRY: acrgagan01
+  AZURE_CONTAINER_REGISTRY: gaganacr01
   PROJECT_NAME: mavenproject
   RESOURCE_GROUP: gagan-rg
   CLUSTER_NAME: aks-poc-centralindia-01
-  REGISTRY_URL: acrgagan01.azurecr.io
+  REGISTRY_URL: gaganacr01.azurecr.io
 jobs:
   build:
     runs-on:
